@@ -1,3 +1,5 @@
+#created by Ziyadin
+
 mv pscands.1.ph pscands.1.ph0
 
 cat << son > swap_pixels.m
