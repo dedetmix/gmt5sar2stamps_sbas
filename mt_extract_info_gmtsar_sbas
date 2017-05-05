@@ -1,0 +1,27 @@
+#!/bin/bash 
+
+#
+# Extract info from various files for use by StaMPS
+#
+
+SLC_OSF="1"  # check if oversampled or not
+echo $SLC_OSF > slc_osfactor.1.in                 # put oversampling factor to file 
+
+# Create other input files for PS SBAS candidates, make sure folder stack/PS has been processed
+cp ../../bperp.1.in .
+cp ../../day.1.in .
+cp ../../master_day.1.in .
+
+rm ifgday.1.in
+cat list_sbas | while read name prm_master prm_slave date_master date_slave
+do
+echo $date_master $date_slave >> ifgday.1.in
+done
+
+echo "-12.00707218611660e" > heading.1.in # for Sentinel-1 
+ln -s ../../../raw/*LED .
+ln -s ../../../topo/master.PRM .
+ln -s ../../../topo/trans.dat .
+ln -s ../../../topo/dem.grd .
+ln -s ../../../raw/scatter.grd .
+grep radar_wavelength master.PRM | awk '{print $3}' > lambda.1.in # in meters
