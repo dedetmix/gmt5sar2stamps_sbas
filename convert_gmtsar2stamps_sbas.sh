@@ -15,6 +15,10 @@ cd ..
 intf_tops.csh intf_sbas.in batch_tops.config
 # make sure proc_stage = 2, dec_factor = 1
 
+# or to save the storage space, run process_intf.csh (modify the file and path name) in stack folder and skip Step 3
+# process_intf.csh
+# intf.in --> e.g. S1A20141012_ALL_F2:S1A20141117_ALL_F2
+
 #step 3
 cd stack/PS
 mkdir SMALL_BASELINES
