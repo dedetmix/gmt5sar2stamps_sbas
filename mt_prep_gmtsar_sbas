@@ -15,7 +15,7 @@ raw=/home/isya/APPS/ciloto/Sentinel1/batch_dsc/raw
 raw_orig=/home/isya/APPS/ciloto/Sentinel1/batch_dsc/raw_orig
 topo=/home/isya/APPS/ciloto/Sentinel1/batch_dsc/topo
 SLC=/home/isya/APPS/ciloto/Sentinel1/batch_dsc/raw
-heading=-1.6799e+02 # for descending, for ascending: -12.00707218611660e
+heading=auto #for descending:-1.6799e+02, for ascending:-12.00707218611660e
 master_date=20160717
 ############################################################################
 
@@ -34,6 +34,11 @@ cd SMALL_BASELINES
 matlab -nojvm -nosplash -nodisplay < $STAMPS/matlab/sb_parms_initial.m > sb_parms_initial.log
 cd ..
 rm -r -f SMALL_BASELINES/PATCH_*
+
+# read azimuth heading angle from the master image
+if [ $heading == auto ]; then
+heading=$(grep platformHeading $raw_orig/*$master_date*.xml | awk -F">||<" '{print $3}')
+fi
 
 p=1
 while read region
