@@ -4,14 +4,20 @@
 # extract data for candidiate pixels 
 # 
 
-threshold="0.6"
-region="11100/13500/10750/11250"
-reg="11100/13500/10750/11250"
+# make sure you have (files): list , date_dsc_no_master.txt , list_sbas (generate automatically)
+
+# Parameter (should be not changed) #
+crop=$1
+threshold=$2
+region=$3
+#####################################
+dir=$(pwd)
+
 gmt grdmath scatter.grd $threshold LT 0 NAN scatter.grd MUL = cands0.grd 
 
 gmt grdsample -T cands0.grd -R$region -Gcands.grd 
 cp cands.grd cands_old.grd 
-gmt grdedit cands.grd -R$reg 
+gmt grdedit cands.grd -R$region 
 
 input="cands.grd"
 width=`gmt grdinfo -C $input | awk '{print $10}'`
@@ -19,7 +25,7 @@ echo $width > width.txt # range
 length=`gmt grdinfo -C $input | awk '{print $11}'`
 echo $length > len.txt # azimuth
 
-# Get the dispersion index for PS candidates
+# Get the difference dispersion index for PS candidates
 gmt grd2xyz cands.grd -s > cands.dat 
 gmt gmtconvert cands.dat -o2 > pscands.1.da
 awk '{printf("%d %d %d\n", NR,$2,$1)}' cands.dat > pscands.1.ij
@@ -39,7 +45,6 @@ gmt grd2xyz tmp.grd | awk '{print $1,$2,1}' > tmp.xy
 proj_ra2ll_ascii.csh trans.dat tmp.xy tmp.ll 
 #rm ralt.grd raln.grd 
 awk '{printf("%f %f %d\n%f %f %d\n",$1,$2,0,$1,$2,1000)}' tmp.ll > tmp.llt
-ln -s ../topo/master.PRM .
 SAT_look master.PRM < tmp.llt > tmp.lltn 
 gmt gmtmath -C5 -o5 tmp.lltn ACOS 180 MUL PI DIV = look_angle.1.in
 awk '{printf("%0.4f\n", $1)}' look_angle.1.in > look_angle0.1.in
@@ -49,14 +54,39 @@ rm tmp.xy tmp.ll tmp.llt tmp.lltn
 
 # Retrieve perpendicular baseline for each interferogram
 # copy the calculation from PS folder
-cp ../../bperp* .
+
+# cp ../../bperp* . # uncomment if PS processing has been processed and comment following lines
+
+# or do
+#generate list, before modify date_asc.txt without date for master!
+
+rm -f list
+cat date_no_master.txt | while read date; do slave_id=$(grep SC_clock_start "S1A"$date"_ALL_F1".PRM | awk '{printf("%d",int($3))}'); echo "2016198_"$slave_id "S1A""$date""_ALL_F1" $date >> list; done
+
+cat list | while read name prm date
+do
+  SAT_baseline master.PRM $prm.PRM >> $prm.PRM
+  bperp $prm.PRM tmp.grd bperp.grd 
+  gmt grd2xyz bperp.grd | awk '{print $3}' > bperp0
+  value=`grep earth_radius $prm.PRM | awk '{print $3+1000}'`
+  update_PRM.csh $prm.PRM earth_radius $value
+  bperp $prm.PRM tmp.grd bperp.grd
+  gmt grd2xyz bperp.grd | awk '{print $3}' > bperp1000
+  paste bperp0 bperp1000 > tmp
+  awk '{printf("%f\n%f\n", $1,$2)}' tmp > bperp_$date.1.in
+done
+rm tmp bperp0 bperp1000 bperp.grd tmp.grd
 
 # Retrieve phase for PS candidates
-rm pscands.1.ph
-cat list_sbas | while read name prm_master prm_slave date_master date_slave
+rm -f pscands.1.ph
+cd $crop
+ls -1 im* | sed 's/im_//' | sed 's/.grd//' > list_sbas
+cat list_sbas | while read name
 do
-  gmt grdtrack cands_old.dat -Gre_$name.grd -Z -bos >> pscands.1.ph
-  gmt grdtrack cands_old.dat -Gim_$name.grd -Z -bos >> pscands.1.ph
+  gmt grdtrack $dir/cands_old.dat -Gre_$name.grd -Z -bos >> $dir/pscands.1.ph
+  gmt grdtrack $dir/cands_old.dat -Gim_$name.grd -Z -bos >> $dir/pscands.1.ph
 done
+cd $dir
 
-rm cands_old.grd 
+rm *.PRM *.LED
+#rm cands_old.grd cands0.grd cands.grd

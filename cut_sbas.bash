@@ -1,16 +1,27 @@
 #!/bin/bash
 
-region=$(grep region_cut ../../../batch_tops.config | awk '{print $3}')
+#################### SET PARAMETERS ##############################
+inputfile=intf_intersect.in
+region=$(grep region_cut ../batch_tops.config | awk '{print $3}')
+raw=/home/isya/APPS/ciloto/Sentinel1/batch_dsc/raw
+##################################################################
 
 rm re_*.grd im_*.grd
-cat list_sbas | while read a b c d e
+[ -d crop ] && echo "Directory crop exists" || mkdir crop
+ 
+shopt -s extglob
+IFS=":"
+while read master slave
 do
-  echo $a
-  gmt grdmath real_$a.grd FLIPUD = tmp.grd=bf
+  echo "cut $master"_"$slave grd files to size area"
+  master_id=$(grep SC_clock_start $raw/$master.PRM | awk '{printf("%d",int($3))}')
+  slave_id=$(grep SC_clock_start $raw/$slave.PRM | awk '{printf("%d",int($3))}')
+  gmt grdmath real_$master_id"_""$slave_id".grd FLIPUD = tmp.grd=bf
   gmt grdsample tmp.grd -T -Gtmp.grd 
-  gmt grdcut tmp.grd -R$region -Gre_$a.grd=bf
-  gmt grdmath imag_$a.grd FLIPUD = tmp.grd=bf
+  gmt grdcut tmp.grd -R$region -Gre_$master_id"_""$slave_id".grd=bf
+  gmt grdmath imag_$master_id"_""$slave_id".grd FLIPUD = tmp.grd=bf
   gmt grdsample tmp.grd -T -Gtmp.grd 
-  gmt grdcut tmp.grd -R$region -Gim_$a.grd=bf
-done
+  gmt grdcut tmp.grd -R$region -Gim_$master_id"_""$slave_id".grd=bf
+  mv im_$master_id"_""$slave_id".grd re_$master_id"_""$slave_id".grd crop/.
+done < $inputfile
 rm tmp.grd
