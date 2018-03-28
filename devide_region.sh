@@ -24,7 +24,7 @@ rm -f -r PATCH.loc PATCH_*
 
 # create patch.in and patch.noover.in
 echo " "
-stamps_reg.csh $range_x $range_y $R $A $ov_R $ov_A
+stamps_reg.csh $range_x $range_y $R $A $ov_R $ov_A $region
 echo " "
 
 # create PATCH.loc

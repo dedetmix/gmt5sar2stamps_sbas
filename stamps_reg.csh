@@ -10,6 +10,10 @@ set prg = $3
 set paz = $4
 set overlap_rg = $5
 set overlap_az = $6
+set region = $7
+
+set x1 = `echo $region | sed -r 's/[/]+/\t/g' | cut -f 1 | awk '{print $1}'`
+set y1 = `echo $region | sed -r 's/[/]+/\t/g' | cut -f 3 | awk '{print $1}'`
 
 
 @ width_p = $width / $prg
@@ -56,10 +60,14 @@ while ($irg < $prg)
         echo $end_rg >> patch.in
         echo $start_az >> patch.in
         echo $end_az >> patch.in
-        echo $start_rg1 > patch_noover.in
-        echo $end_rg1 >> patch_noover.in
-        echo $start_az1 >> patch_noover.in
-        echo $end_az1 >> patch_noover.in
+        echo $start_rg1 > patch_noover_old.in
+        echo $end_rg1 >> patch_noover_old.in
+        echo $start_az1 >> patch_noover_old.in
+        echo $end_az1 >> patch_noover_old.in
+        echo `expr $start_rg1 + $x1` > patch_noover.in
+        echo `expr $end_rg1 + $x1` >> patch_noover.in
+        echo `expr $start_az1 + $y1` >> patch_noover.in
+        echo `expr $end_az1 + $y1` >> patch_noover.in
         cd ..
     end
     set iaz = 0
