@@ -4,19 +4,20 @@
 # mt_prep gmtsar for SBAS configuration
 
 ############ set parameters ################################################
-region="9000/12000/7000/8000"
+region="11000/15000/10500/11500"
 R=3
 A=2
 ov_R=50
 ov_A=200
-crop=/home/isya/APPS/ciloto/Sentinel1/batch_dsc/stack/crop
+crop=/home/isya/APPS/ciloto/Sentinel1/batch_asc/stack_diff/crop
 threshold="0.5"
-raw=/home/isya/APPS/ciloto/Sentinel1/batch_dsc/raw
-raw_orig=/home/isya/APPS/ciloto/Sentinel1/batch_dsc/raw_orig
-topo=/home/isya/APPS/ciloto/Sentinel1/batch_dsc/topo
-SLC=/home/isya/APPS/ciloto/Sentinel1/batch_dsc/raw
-heading=auto #for descending:-1.6799e+02, for ascending:-12.00707218611660e
-master_date=20160717
+raw=/home/isya/APPS/ciloto/Sentinel1/batch_asc/raw
+raw_orig=/home/isya/APPS/ciloto/Sentinel1/batch_asc/raw_orig
+topo=/home/isya/APPS/ciloto/Sentinel1/batch_asc/topo
+SLC=/home/isya/APPS/ciloto/Sentinel1/batch_asc/raw
+heading=auto # for descending, for ascending: -12.00707218611660e
+master_date=20160123
+suffix=F2
 ############################################################################
 
 # file input (must be put on PS folder):
@@ -34,6 +35,7 @@ cd SMALL_BASELINES
 matlab -nojvm -nosplash -nodisplay < $STAMPS/matlab/sb_parms_initial.m > sb_parms_initial.log
 cd ..
 rm -r -f SMALL_BASELINES/PATCH_*
+ln -f -s $topo/master.PRM .
 
 # read azimuth heading angle from the master image
 if [ $heading == auto ]; then
@@ -45,7 +47,7 @@ while read region
 do
 
   mt_extract_info_gmtsar_sbas $raw $raw_orig $topo $SLC $heading $master_date
-  mt_extract_cands_gmtsar_sbas $crop $threshold $region
+  mt_extract_cands_gmtsar_sbas $crop $threshold $region $suffix
 
   mkdir -p cands_$p
   mv cands_old.grd cands_"$p"/.
@@ -69,4 +71,3 @@ cd SMALL_BASELINES
 ln -f -s ../*.in .
 ls -d PATCH_* > patch.list
 cd ..
-
