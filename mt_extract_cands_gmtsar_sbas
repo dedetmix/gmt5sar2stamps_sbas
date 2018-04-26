@@ -4,12 +4,13 @@
 # extract data for candidiate pixels 
 # 
 
-# make sure you have (files): list , date_dsc_no_master.txt , list_sbas (generate automatically)
+# make sure you have (files): list , date_no_master.txt , list_sbas (generate automatically)
 
 # Parameter (should be not changed) #
 crop=$1
 threshold=$2
 region=$3
+suffix=$4
 #####################################
 dir=$(pwd)
 
@@ -61,7 +62,8 @@ rm tmp.xy tmp.ll tmp.llt tmp.lltn
 #generate list, before modify date_asc.txt without date for master!
 
 rm -f list
-cat date_no_master.txt | while read date; do slave_id=$(grep SC_clock_start "S1A"$date"_ALL_F1".PRM | awk '{printf("%d",int($3))}'); echo "2016198_"$slave_id "S1A""$date""_ALL_F1" $date >> list; done
+master_id=$(grep SC_clock_start master.PRM | awk '{printf("%d",int($3))}')
+cat date_no_master.txt | while read date; do slave_id=$(grep SC_clock_start "S1A"$date"_ALL_"$suffix"".PRM | awk '{printf("%d",int($3))}'); echo $master_id"_"$slave_id "S1A""$date""_ALL_"$suffix"" $date >> list; done
 
 cat list | while read name prm date
 do
