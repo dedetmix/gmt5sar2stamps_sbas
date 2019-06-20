@@ -1,6 +1,6 @@
 These are script that i modified GMT5SAR output to be worked for SBAS STAMPS. The original scripts comes from (Xiaopeng Tong, et al): 
 
-https://github.com/xitong123/gmtsar2stamps
+https://github.com/mohseniaref/gmtsar2stamps
 
 http://gmt.soest.hawaii.edu/boards/6/topics/4346
 
