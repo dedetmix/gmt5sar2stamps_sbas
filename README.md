@@ -15,3 +15,6 @@ must be replaced with
 
 % For gmtsar output in case ROI is cropped so that xmin and/or xmax are not zero
 [gridX,gridY]=meshgrid(linspace((min(ij(:,3))),width+(min(ij(:,3))),50),linspace((min(ij(:,2))),len+(min(ij(:,2))),50));
+
+Related Publication:
+Hayati, N.; Niemeier, W.; Sadarviana, V. Ground Deformation in The Ciloto Landslides Area Revealed by Multi-Temporal InSAR. Geosciences 2020, 10, 156. 
