@@ -17,4 +17,4 @@ must be replaced with
 [gridX,gridY]=meshgrid(linspace((min(ij(:,3))),width+(min(ij(:,3))),50),linspace((min(ij(:,2))),len+(min(ij(:,2))),50));
 
 Related Publication:
-Hayati, N.; Niemeier, W.; Sadarviana, V. Ground Deformation in The Ciloto Landslides Area Revealed by Multi-Temporal InSAR. Geosciences 2020, 10, 156. 
+- Hayati, N.; Niemeier, W.; Sadarviana, V. Ground Deformation in The Ciloto Landslides Area Revealed by Multi-Temporal InSAR. Geosciences 2020, 10, 156. https://doi.org/10.3390/geosciences10050156
