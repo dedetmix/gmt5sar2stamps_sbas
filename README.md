@@ -1,3 +1,5 @@
+A simplified version (both for single and multi master intefrerograms) can be processed from  InSAR_G2S (https://github.com/dedetmix/INSAR_G2S)
+
 These are codes that I modified to integrate GMTSAR output to StaMPS software for the small baselines method. The original scripts were from Xiaopeng Tong, et al: 
 
 https://github.com/mohseniaref/gmtsar2stamps
